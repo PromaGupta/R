@@ -1,0 +1,878 @@
+
+R version 4.2.0 (2022-04-22 ucrt) -- "Vigorous Calisthenics"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Workspace loaded from ~/.RData]
+
+> library(plm)
+> install.packages("plm")
+Error in install.packages : Updating loaded packages
+> setwd("C://Users//HP//Desktop//Jupyter_practice//R")
+> library(plm)
+> #install.packages("plm")
+> setwd("C://Users//HP//Desktop//Jupyter_practice//R")
+> ##with growth
+> c1<-read.csv("C://Users//HP//Desktop//Jupyter_practice//R//bank new-3.csv")
+> #data
+> pdata = pdata.frame(c1, index = c("ID","Year"))
+> pooledmethod=plm(roe~ta+ffr+cc+lf, data=pdata, model = "pooling")
+> summary(pooledmethod)
+Pooling Model
+
+Call:
+plm(formula = roe ~ ta + ffr + cc + lf, data = pdata, model = "pooling")
+
+Balanced Panel: n = 20, T = 19, N = 380
+
+Residuals:
+      Min.    1st Qu.     Median    3rd Qu.       Max. 
+-0.3800416 -0.0185892  0.0063517  0.0280084  0.1927469 
+
+Coefficients:
+               Estimate  Std. Error t-value  Pr(>|t|)    
+(Intercept)  0.37211476  0.08265812  4.5019 9.004e-06 ***
+ta          -0.06359744  0.01790291 -3.5524 0.0004305 ***
+ffr         -0.00393280  0.00328559 -1.1970 0.2320693    
+cc           0.09454816  0.03425906  2.7598 0.0060675 ** 
+lf           0.00161893  0.00034738  4.6604 4.391e-06 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Total Sum of Squares:    1.2305
+Residual Sum of Squares: 0.9524
+R-Squared:      0.22603
+Adj. R-Squared: 0.21777
+F-statistic: 27.3783 on 4 and 375 DF, p-value: < 2.22e-16
+> ##fixed method
+> femethod=plm(roe~ta+ffr+cc+lf, data=pdata, model = "within")
+> summary(femethod)
+Oneway (individual) effect Within Model
+
+Call:
+plm(formula = roe ~ ta + ffr + cc + lf, data = pdata, model = "within")
+
+Balanced Panel: n = 20, T = 19, N = 380
+
+Residuals:
+       Min.     1st Qu.      Median     3rd Qu.        Max. 
+-0.33322842 -0.01617916  0.00039957  0.01975628  0.19919165 
+
+Coefficients:
+       Estimate  Std. Error t-value  Pr(>|t|)    
+ta  -0.06359744  0.01499824 -4.2403 2.848e-05 ***
+ffr -0.00393280  0.00275252 -1.4288  0.153938    
+cc   0.09454816  0.02870067  3.2943  0.001086 ** 
+lf   0.00161893  0.00029102  5.5630 5.219e-08 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Total Sum of Squares:    0.91269
+Residual Sum of Squares: 0.63456
+R-Squared:      0.30474
+Adj. R-Squared: 0.25982
+F-statistic: 39.0097 on 4 and 356 DF, p-value: < 2.22e-16
+> ##random method
+> remethod=plm(roe~ta+ffr+cc+lf, data=pdata, model = "random")
+> summary(remethod)
+Oneway (individual) effect Random Effect Model 
+   (Swamy-Arora's transformation)
+
+Call:
+plm(formula = roe ~ ta + ffr + cc + lf, data = pdata, model = "random")
+
+Balanced Panel: n = 20, T = 19, N = 380
+
+Effects:
+                    var   std.dev share
+idiosyncratic 0.0017825 0.0422192 0.694
+individual    0.0007866 0.0280470 0.306
+theta: 0.6736
+
+Residuals:
+      Min.    1st Qu.     Median    3rd Qu.       Max. 
+-0.3485093 -0.0157188  0.0020185  0.0210051  0.1970879 
+
+Coefficients:
+               Estimate  Std. Error z-value  Pr(>|z|)    
+(Intercept)  0.37211476  0.06953059  5.3518 8.708e-08 ***
+ta          -0.06359744  0.01499824 -4.2403 2.232e-05 ***
+ffr         -0.00393280  0.00275252 -1.4288 0.1530617    
+cc           0.09454816  0.02870067  3.2943 0.0009867 ***
+lf           0.00161893  0.00029102  5.5630 2.652e-08 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Total Sum of Squares:    0.94655
+Residual Sum of Squares: 0.66842
+R-Squared:      0.29384
+Adj. R-Squared: 0.2863
+Chisq: 156.039 on 4 DF, p-value: < 2.22e-16
+> ##Poolabilty Test
+> #null: pooled ols is stable
+> 
+> pooltest(roe~ta+ffr+cc+lf, data=pdata, model = "within")
+
+	F statistic
+
+data:  roe ~ ta + ffr + cc + lf
+F = 4.4124, df1 = 76, df2 = 280, p-value < 2.2e-16
+alternative hypothesis: unstability
+
+> ##as p is less than 5%, pooled ols is unstable here
+> 
+> ##Pooled vs Fixed
+> # Null: Pooled is consistent
+> # Alter: Fixed is consistent
+> pFtest(femethod,pooledmethod)
+
+	F test for individual effects
+
+data:  roe ~ ta + ffr + cc + lf
+F = 9.3851, df1 = 19, df2 = 356, p-value < 2.2e-16
+alternative hypothesis: significant effects
+
+> 
+> ## ##as p is less than 5%, pooled ols is unstable here and Fixed effect model is consistent
+> ##Hausman Test
+> 
+> # Null: Random is consistent
+> # Alter: Fixed is constant
+> 
+> phtest(femethod,remethod)
+
+	Hausman Test
+
+data:  roe ~ ta + ffr + cc + lf
+chisq = 1.6518e-14, df = 4, p-value = 1
+alternative hypothesis: one model is inconsistent
+
+> ##we can say out of both, random is more consistent
+> 
+> ##Panel Unit Root Testing, null is that the variable is non stationary
+> w = data.frame(split(pdata$roe, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = -5.635, p-value = 8.754e-09
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> w = data.frame(split(pdata$roe, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = -5.635, p-value = 8.754e-09
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> w = data.frame(split(pdata$ta, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = -1.5469, p-value = 0.06095
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> w = data.frame(split(pdata$cc, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = 13.863, p-value = 1
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> w = data.frame(split(pdata$ffr, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = -8.8073, p-value < 2.2e-16
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> w = data.frame(split(pdata$lf, pdata$ID))
+> purtest(w, pmax=2,exo="intercept", test = "levinlin" )
+
+	Levin-Lin-Chu Unit-Root Test (ex. var.: Individual Intercepts)
+
+data:  w
+z = -0.58249, p-value = 0.2801
+alternative hypothesis: stationarity
+
+Warning message:
+In selectT(l, theTs) : the time series is short
+> 
+> #Durbin Watson for Autocorrelation;Null: there is no autocorrelation
+> 
+> pdwtest(roe~ta+ffr+cc+lf, data=pdata, model = "random")
+
+	Durbin-Watson test for serial correlation in panel models
+
+data:  roe ~ ta + ffr + cc + lf
+DW = 0.91544, p-value < 2.2e-16
+alternative hypothesis: serial correlation in idiosyncratic errors
+
+> 
+> # The error term generated from random effect has autocorrelation problem of serial correlation
+> ####Homoscedasticity Test: Null-there is homoskedasticity
+> library(lmtest)
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+> #install.packages("zoo")
+> bptest(roe~ta+ffr+cc+lf, data=pdata, studentize = F)
+
+	Breusch-Pagan test
+
+data:  roe ~ ta + ffr + cc + lf
+BP = 92.245, df = 4, p-value < 2.2e-16
+
+> #Durbin Watson for Autocorrelation;Null: there is no autocorrelation
+> 
+> pdwtest(roe~ta+ffr+cc+lf, data=pdata, model = "random")
+
+	Durbin-Watson test for serial correlation in panel models
+
+data:  roe ~ ta + ffr + cc + lf
+DW = 0.91544, p-value < 2.2e-16
+alternative hypothesis: serial correlation in idiosyncratic errors
+
+> ####Homoscedasticity Test: Null-there is homoskedasticity
+> library(lmtest)
+> ####Homoscedasticity Test: Null-there is homoskedasticity
+> library(lmtest)
+> #install.packages("zoo")
+> bptest(roe~ta+ffr+cc+lf, data=pdata, studentize = F)
+
+	Breusch-Pagan test
+
+data:  roe ~ ta + ffr + cc + lf
+BP = 92.245, df = 4, p-value < 2.2e-16
+
+> ##There is no homoscedasticity
+> ###Controlling of Heteroscedasticity and autocorrelation of Panel Data###
+> 
+> #for the fixed effect effect model:
+> library(sandwich)
+> coeftest(femethod,vcovHC(femethod,method = "arellano"))
+
+t test of coefficients:
+
+       Estimate  Std. Error t value  Pr(>|t|)    
+ta  -0.06359744  0.01386035 -4.5884 6.198e-06 ***
+ffr -0.00393280  0.00134578 -2.9223 0.0036962 ** 
+cc   0.09454816  0.02424029  3.9005 0.0001148 ***
+lf   0.00161893  0.00040175  4.0297 6.832e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> coeftest(remethod,vcovHC(remethod,method = "arellano"))
+
+t test of coefficients:
+
+               Estimate  Std. Error t value  Pr(>|t|)    
+(Intercept)  0.37211476  0.09470517  3.9292 0.0001015 ***
+ta          -0.06359744  0.01386035 -4.5884 6.099e-06 ***
+ffr         -0.00393280  0.00134578 -2.9223 0.0036848 ** 
+cc           0.09454816  0.02424029  3.9005 0.0001138 ***
+lf           0.00161893  0.00040175  4.0297 6.764e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+> pbgtest(femethod)
+
+	Breusch-Godfrey/Wooldridge test for serial correlation in panel
+	models
+
+data:  roe ~ ta + ffr + cc + lf
+chisq = 125, df = 19, p-value < 2.2e-16
+alternative hypothesis: serial correlation in idiosyncratic errors
+
+> pbgtest(remethod)
+
+	Breusch-Godfrey/Wooldridge test for serial correlation in panel
+	models
+
+data:  roe ~ ta + ffr + cc + lf
+chisq = 130.18, df = 19, p-value < 2.2e-16
+alternative hypothesis: serial correlation in idiosyncratic errors
+
+> library(tseries)
+Error in library(tseries) : there is no package called ‘tseries’
+> ####ADF TEST, NULL: STATIONARY
+> install.packages("tseries")
+Installing package into ‘C:/Users/HP/AppData/Local/R/win-library/4.2’
+(as ‘lib’ is unspecified)
+also installing the dependencies ‘xts’, ‘TTR’, ‘curl’, ‘quadprog’, ‘quantmod’
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/xts_0.12.1.zip'
+Content type 'application/zip' length 897059 bytes (876 KB)
+downloaded 876 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/TTR_0.24.3.zip'
+Content type 'application/zip' length 519809 bytes (507 KB)
+downloaded 507 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/curl_4.3.2.zip'
+Content type 'application/zip' length 2616370 bytes (2.5 MB)
+downloaded 2.5 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/quadprog_1.5-8.zip'
+Content type 'application/zip' length 36699 bytes (35 KB)
+downloaded 35 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/quantmod_0.4.20.zip'
+Content type 'application/zip' length 1032730 bytes (1008 KB)
+downloaded 1008 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/tseries_0.10-51.zip'
+Content type 'application/zip' length 379068 bytes (370 KB)
+downloaded 370 KB
+
+package ‘xts’ successfully unpacked and MD5 sums checked
+package ‘TTR’ successfully unpacked and MD5 sums checked
+package ‘curl’ successfully unpacked and MD5 sums checked
+package ‘quadprog’ successfully unpacked and MD5 sums checked
+package ‘quantmod’ successfully unpacked and MD5 sums checked
+package ‘tseries’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\HP\AppData\Local\Temp\RtmpcHh1UO\downloaded_packages
+> library(tseries)
+Registered S3 method overwritten by 'quantmod':
+  method            from
+  as.zoo.data.frame zoo 
+
+    ‘tseries’ version: 0.10-51
+
+    ‘tseries’ is a package for time series analysis and
+    computational finance.
+
+    See ‘library(help="tseries")’ for details.
+
+> adf.test(pdata$roe)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$roe
+Dickey-Fuller = -6.3018, Lag order = 7, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$roe) : p-value smaller than printed p-value
+> adf.test(pdata$ta)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$ta
+Dickey-Fuller = -10.472, Lag order = 7, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$ta) : p-value smaller than printed p-value
+> adf.test(pdata$cc)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$cc
+Dickey-Fuller = -10.713, Lag order = 7, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$cc) : p-value smaller than printed p-value
+> adf.test(pdata$lf)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$lf
+Dickey-Fuller = -8.1069, Lag order = 7, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$lf) : p-value smaller than printed p-value
+> adf.test(pdata$ffr)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$ffr
+Dickey-Fuller = -11.271, Lag order = 7, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$ffr) : p-value smaller than printed p-value
+> adf.test(pdata$roe, k=1)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$roe
+Dickey-Fuller = -8.1275, Lag order = 1, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$roe, k = 1) : p-value smaller than printed p-value
+> adf.test(pdata$roe, k=2)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$roe
+Dickey-Fuller = -7.6043, Lag order = 2, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$roe, k = 2) : p-value smaller than printed p-value
+> adf.test(pdata$roe, k=3)
+
+	Augmented Dickey-Fuller Test
+
+data:  pdata$roe
+Dickey-Fuller = -7.2702, Lag order = 3, p-value = 0.01
+alternative hypothesis: stationary
+
+Warning message:
+In adf.test(pdata$roe, k = 3) : p-value smaller than printed p-value
+> sur=systemfit(roe~ta+ffr+cc+lf,method = "SUR", data = pdata)
+Error in systemfit(roe ~ ta + ffr + cc + lf, method = "SUR", data = pdata) : 
+  could not find function "systemfit"
+> install.packages("systemfit")
+Installing package into ‘C:/Users/HP/AppData/Local/R/win-library/4.2’
+(as ‘lib’ is unspecified)
+also installing the dependencies ‘rprojroot’, ‘rstudioapi’, ‘diffobj’, ‘rematch2’, ‘stringi’, ‘cpp11’, ‘brio’, ‘callr’, ‘desc’, ‘jsonlite’, ‘pkgload’, ‘praise’, ‘processx’, ‘ps’, ‘waldo’, ‘backports’, ‘purrr’, ‘stringr’, ‘tidyr’, ‘tidyselect’, ‘evaluate’, ‘highr’, ‘yaml’, ‘xfun’, ‘testthat’, ‘broom’, ‘dplyr’, ‘numDeriv’, ‘knitr’, ‘SparseM’, ‘MatrixModels’, ‘sp’, ‘minqa’, ‘nloptr’, ‘RcppEigen’, ‘carData’, ‘abind’, ‘pbkrtest’, ‘quantreg’, ‘maptools’, ‘lme4’, ‘car’
+
+
+  There is a binary version available but the source version is
+  later:
+          binary source needs_compilation
+systemfit 1.1-24 1.1-26             FALSE
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/rprojroot_2.0.3.zip'
+Content type 'application/zip' length 109222 bytes (106 KB)
+downloaded 106 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/rstudioapi_0.13.zip'
+Content type 'application/zip' length 301545 bytes (294 KB)
+downloaded 294 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/diffobj_0.3.5.zip'
+Content type 'application/zip' length 990928 bytes (967 KB)
+downloaded 967 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/rematch2_2.1.2.zip'
+Content type 'application/zip' length 47427 bytes (46 KB)
+downloaded 46 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/stringi_1.7.6.zip'
+Content type 'application/zip' length 14173262 bytes (13.5 MB)
+downloaded 13.5 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/cpp11_0.4.2.zip'
+Content type 'application/zip' length 327379 bytes (319 KB)
+downloaded 319 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/brio_1.1.3.zip'
+Content type 'application/zip' length 38287 bytes (37 KB)
+downloaded 37 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/callr_3.7.0.zip'
+Content type 'application/zip' length 435704 bytes (425 KB)
+downloaded 425 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/desc_1.4.1.zip'
+Content type 'application/zip' length 327967 bytes (320 KB)
+downloaded 320 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/jsonlite_1.8.0.zip'
+Content type 'application/zip' length 1099016 bytes (1.0 MB)
+downloaded 1.0 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/pkgload_1.2.4.zip'
+Content type 'application/zip' length 154267 bytes (150 KB)
+downloaded 150 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/praise_1.0.0.zip'
+Content type 'application/zip' length 19822 bytes (19 KB)
+downloaded 19 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/processx_3.6.1.zip'
+Content type 'application/zip' length 774051 bytes (755 KB)
+downloaded 755 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/ps_1.7.1.zip'
+Content type 'application/zip' length 548134 bytes (535 KB)
+downloaded 535 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/waldo_0.4.0.zip'
+Content type 'application/zip' length 101950 bytes (99 KB)
+downloaded 99 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/backports_1.4.1.zip'
+Content type 'application/zip' length 102215 bytes (99 KB)
+downloaded 99 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/purrr_0.3.4.zip'
+Content type 'application/zip' length 408501 bytes (398 KB)
+downloaded 398 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/stringr_1.4.0.zip'
+Content type 'application/zip' length 213737 bytes (208 KB)
+downloaded 208 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/tidyr_1.2.0.zip'
+Content type 'application/zip' length 967152 bytes (944 KB)
+downloaded 944 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/tidyselect_1.1.2.zip'
+Content type 'application/zip' length 206146 bytes (201 KB)
+downloaded 201 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/evaluate_0.15.zip'
+Content type 'application/zip' length 79311 bytes (77 KB)
+downloaded 77 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/highr_0.9.zip'
+Content type 'application/zip' length 46660 bytes (45 KB)
+downloaded 45 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/yaml_2.3.5.zip'
+Content type 'application/zip' length 116423 bytes (113 KB)
+downloaded 113 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/xfun_0.31.zip'
+Content type 'application/zip' length 389981 bytes (380 KB)
+downloaded 380 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/testthat_3.1.4.zip'
+Content type 'application/zip' length 2083540 bytes (2.0 MB)
+downloaded 2.0 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/broom_0.8.0.zip'
+Content type 'application/zip' length 1847975 bytes (1.8 MB)
+downloaded 1.8 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/dplyr_1.0.9.zip'
+Content type 'application/zip' length 1297402 bytes (1.2 MB)
+downloaded 1.2 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/numDeriv_2016.8-1.1.zip'
+Content type 'application/zip' length 116102 bytes (113 KB)
+downloaded 113 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/knitr_1.39.zip'
+Content type 'application/zip' length 1483954 bytes (1.4 MB)
+downloaded 1.4 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/SparseM_1.81.zip'
+Content type 'application/zip' length 1026945 bytes (1002 KB)
+downloaded 1002 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/MatrixModels_0.5-0.zip'
+Content type 'application/zip' length 428768 bytes (418 KB)
+downloaded 418 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/sp_1.5-0.zip'
+Content type 'application/zip' length 1791202 bytes (1.7 MB)
+downloaded 1.7 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/minqa_1.2.4.zip'
+Content type 'application/zip' length 449600 bytes (439 KB)
+downloaded 439 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/nloptr_2.0.3.zip'
+Content type 'application/zip' length 999407 bytes (975 KB)
+downloaded 975 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/RcppEigen_0.3.3.9.2.zip'
+Content type 'application/zip' length 2283833 bytes (2.2 MB)
+downloaded 2.2 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/carData_3.0-5.zip'
+Content type 'application/zip' length 1822283 bytes (1.7 MB)
+downloaded 1.7 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/abind_1.4-5.zip'
+Content type 'application/zip' length 63750 bytes (62 KB)
+downloaded 62 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/pbkrtest_0.5.1.zip'
+Content type 'application/zip' length 355839 bytes (347 KB)
+downloaded 347 KB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/quantreg_5.93.zip'
+Content type 'application/zip' length 1726131 bytes (1.6 MB)
+downloaded 1.6 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/maptools_1.1-4.zip'
+Content type 'application/zip' length 2187078 bytes (2.1 MB)
+downloaded 2.1 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/lme4_1.1-29.zip'
+Content type 'application/zip' length 4881769 bytes (4.7 MB)
+downloaded 4.7 MB
+
+trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.2/car_3.1-0.zip'
+Content type 'application/zip' length 1672344 bytes (1.6 MB)
+downloaded 1.6 MB
+
+package ‘rprojroot’ successfully unpacked and MD5 sums checked
+package ‘rstudioapi’ successfully unpacked and MD5 sums checked
+package ‘diffobj’ successfully unpacked and MD5 sums checked
+package ‘rematch2’ successfully unpacked and MD5 sums checked
+package ‘stringi’ successfully unpacked and MD5 sums checked
+package ‘cpp11’ successfully unpacked and MD5 sums checked
+package ‘brio’ successfully unpacked and MD5 sums checked
+package ‘callr’ successfully unpacked and MD5 sums checked
+package ‘desc’ successfully unpacked and MD5 sums checked
+package ‘jsonlite’ successfully unpacked and MD5 sums checked
+package ‘pkgload’ successfully unpacked and MD5 sums checked
+package ‘praise’ successfully unpacked and MD5 sums checked
+package ‘processx’ successfully unpacked and MD5 sums checked
+package ‘ps’ successfully unpacked and MD5 sums checked
+package ‘waldo’ successfully unpacked and MD5 sums checked
+package ‘backports’ successfully unpacked and MD5 sums checked
+package ‘purrr’ successfully unpacked and MD5 sums checked
+package ‘stringr’ successfully unpacked and MD5 sums checked
+package ‘tidyr’ successfully unpacked and MD5 sums checked
+package ‘tidyselect’ successfully unpacked and MD5 sums checked
+package ‘evaluate’ successfully unpacked and MD5 sums checked
+package ‘highr’ successfully unpacked and MD5 sums checked
+package ‘yaml’ successfully unpacked and MD5 sums checked
+package ‘xfun’ successfully unpacked and MD5 sums checked
+package ‘testthat’ successfully unpacked and MD5 sums checked
+package ‘broom’ successfully unpacked and MD5 sums checked
+package ‘dplyr’ successfully unpacked and MD5 sums checked
+package ‘numDeriv’ successfully unpacked and MD5 sums checked
+package ‘knitr’ successfully unpacked and MD5 sums checked
+package ‘SparseM’ successfully unpacked and MD5 sums checked
+package ‘MatrixModels’ successfully unpacked and MD5 sums checked
+package ‘sp’ successfully unpacked and MD5 sums checked
+package ‘minqa’ successfully unpacked and MD5 sums checked
+package ‘nloptr’ successfully unpacked and MD5 sums checked
+package ‘RcppEigen’ successfully unpacked and MD5 sums checked
+package ‘carData’ successfully unpacked and MD5 sums checked
+package ‘abind’ successfully unpacked and MD5 sums checked
+package ‘pbkrtest’ successfully unpacked and MD5 sums checked
+package ‘quantreg’ successfully unpacked and MD5 sums checked
+package ‘maptools’ successfully unpacked and MD5 sums checked
+package ‘lme4’ successfully unpacked and MD5 sums checked
+package ‘car’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\HP\AppData\Local\Temp\RtmpcHh1UO\downloaded_packages
+installing the source package ‘systemfit’
+
+trying URL 'https://cran.rstudio.com/src/contrib/systemfit_1.1-26.tar.gz'
+Content type 'application/x-gzip' length 1033312 bytes (1009 KB)
+downloaded 1009 KB
+
+* installing *source* package 'systemfit' ...
+** package 'systemfit' successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** data
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (systemfit)
+
+The downloaded source packages are in
+	‘C:\Users\HP\AppData\Local\Temp\RtmpcHh1UO\downloaded_packages’
+> ###SUR
+> sur=systemfit(roe~ta+ffr+cc+lf,method = "SUR", data = pdata)
+Error in systemfit(roe ~ ta + ffr + cc + lf, method = "SUR", data = pdata) : 
+  could not find function "systemfit"
+> #install.packages("systemfit")
+> ###SUR
+> library(systemfit)
+Loading required package: Matrix
+Loading required package: car
+Loading required package: carData
+
+Please cite the 'systemfit' package as:
+Arne Henningsen and Jeff D. Hamann (2007). systemfit: A Package for Estimating Systems of Simultaneous Equations in R. Journal of Statistical Software 23(4), 1-40. http://www.jstatsoft.org/v23/i04/.
+
+If you have questions, suggestions, or comments regarding the 'systemfit' package, please use a forum or 'tracker' at systemfit's R-Forge site:
+https://r-forge.r-project.org/projects/systemfit/
+> sur=systemfit(roe~ta+ffr+cc+lf,method = "SUR", data = pdata)
+Error in .solve.dgC.lu(as(a, "dgCMatrix"), b = b, tol = tol) : 
+  LU computationally singular: ratio of extreme entries in |diag(U)| = 8.102e-18
+> summary(sur)
+Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'object' in selecting a method for function 'summary': object 'sur' not found
+> sur=systemfit(roe~ta+ffr,method = "SUR", data = pdata)
+Error in .solve.dgC.lu(as(a, "dgCMatrix"), b = b, tol = tol) : 
+  LU computationally singular: ratio of extreme entries in |diag(U)| = 4.306e-19
+> summary(sur)
+Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'object' in selecting a method for function 'summary': object 'sur' not found
+> ###granger causality test, Null:  does not cause granger 
+> pgrangertest(roe~ta,data = pdata)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ta
+Ztilde = -0.58006, p-value = 0.5619
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~cc,data = pdata)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ cc
+Ztilde = -0.18276, p-value = 0.855
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~lf,data = pdata)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ lf
+Ztilde = -0.95029, p-value = 0.342
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ffr,data = pdata)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ffr
+Ztilde = -0.60728, p-value = 0.5437
+alternative hypothesis: Granger causality for at least one individual
+
+> ###if we know the lag order
+> 
+> pgrangertest(roe~ta,data = pdata, order = 1)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ta
+Ztilde = -0.58006, p-value = 0.5619
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~cc,data = pdata,order = 1)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ cc
+Ztilde = -0.18276, p-value = 0.855
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~lf,data = pdata,order = 1)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ lf
+Ztilde = -0.95029, p-value = 0.342
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ffr,data = pdata,order = 1)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ffr
+Ztilde = -0.60728, p-value = 0.5437
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ta,data = pdata, order = 3)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ta
+Ztilde = 3.2798, p-value = 0.001039
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~cc,data = pdata,order = 3)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ cc
+Ztilde = 6.3065, p-value = 2.855e-10
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~lf,data = pdata,order = 3)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ lf
+Ztilde = -0.73138, p-value = 0.4645
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ffr,data = pdata,order = 3)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ffr
+Ztilde = 7.5779, p-value = 3.513e-14
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ta,data = pdata, order = 4)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ta
+Ztilde = 0.79987, p-value = 0.4238
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~cc,data = pdata,order = 4)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ cc
+Ztilde = 3.063, p-value = 0.002191
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~lf,data = pdata,order = 4)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ lf
+Ztilde = -0.82939, p-value = 0.4069
+alternative hypothesis: Granger causality for at least one individual
+
+> pgrangertest(roe~ffr,data = pdata,order = 4)
+
+	Panel Granger (Non-)Causality Test (Dumitrescu/Hurlin (2012))
+
+data:  roe ~ ffr
+Ztilde = 1.8758, p-value = 0.06068
+alternative hypothesis: Granger causality for at least one individual
